@@ -1,0 +1,59 @@
+---
+name: notepad-actions
+description: Use when the user asks to act on Notepad notes, scan NTL directives, create calendar events, reminders, emails, or tasks from plain .txt notes, or identify dated events in notes.
+---
+
+# Notepad Actions
+
+Scan a Notepad Librarian folder for explicit action directives and inferred dated events.
+
+## Directive Forms
+
+Explicit directives:
+
+```text
+NTL: make a calendar event for dinner with Cassy at Belvedere Hotel Prague on 27/1/2027
+note to librarian: create a task to call the hotel on 27/1/2027
+```
+
+Inferred event example:
+
+```text
+27/1/2027 dinner with Cassy at Belvedere Hotel Prague
+```
+
+Dates are day-first: `27/1/2027` means 27 January 2027.
+
+## Workflow
+
+1. Resolve the library folder.
+2. Run:
+
+```powershell
+python scripts\scan_actions.py <folder> --json
+```
+
+3. Review each returned action.
+4. If `requires_confirmation` is `true`, ask the user before creating anything outward-facing.
+5. If `requires_confirmation` is `false`, the user has enabled automatic explicit `NTL:` action mode; use the available Codex connector or tool for the action.
+6. Inferred actions always require confirmation, even when automatic explicit NTL mode is enabled.
+
+## Enabling Or Disabling Automatic NTL Mode
+
+Use:
+
+```powershell
+python scripts\scan_actions.py <folder> --enable-auto-ntl --json
+python scripts\scan_actions.py <folder> --disable-auto-ntl --json
+```
+
+Automatic mode applies only to explicit `NTL:` or `note to librarian:` lines. It does not apply to inferred dated text.
+
+## Action Handling
+
+- `calendar`: create a calendar event only after confirmation or when explicit NTL auto mode allows it.
+- `email`: draft or send only after confirmation or when explicit NTL auto mode allows it.
+- `reminder`: create a reminder through the available reminder/task tool when possible.
+- `task`: create a task through the available task tool when possible.
+
+When a connector is unavailable, summarize the action and tell the user what could not be completed.

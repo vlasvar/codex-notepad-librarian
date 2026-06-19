@@ -27,6 +27,13 @@ python scripts\organize_library.py <folder> --json
    - originals archived
    - notes skipped
    - updated `Library\Index.txt`, `Library\Hot.txt`, and `Library\Log.txt`
+5. Scan for possible actions:
+
+```powershell
+python scripts\scan_actions.py <folder> --json
+```
+
+Report proposed actions after the organization summary. Ask before acting on inferred actions. Follow `requires_confirmation` for explicit `NTL:` actions.
 
 ## Rules
 

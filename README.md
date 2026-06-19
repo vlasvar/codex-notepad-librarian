@@ -46,6 +46,36 @@ Find what I wrote about the office lease.
 
 Codex searches the text library and answers with the relevant file path and snippet.
 
+## Action Notes
+
+You can leave instructions for the Librarian inside a note:
+
+```text
+NTL: make a calendar event for dinner with Cassy at Belvedere Hotel Prague on 27/1/2027
+```
+
+or:
+
+```text
+note to librarian: create a task to call the hotel on 27/1/2027
+```
+
+Codex scans these lines and proposes calendar, email, reminder, or task actions.
+
+The Librarian can also notice date-like notes even without `NTL:`:
+
+```text
+27/1/2027 dinner with Cassy at Belvedere Hotel Prague
+```
+
+Codex should ask:
+
+```text
+Shall I create a calendar event for "dinner with Cassy at Belvedere Hotel Prague" on 27 January 2027?
+```
+
+By default, the plugin asks before creating anything outside the text library. You can enable automatic action mode for explicit `NTL:` lines, but inferred events always require confirmation.
+
 ## Installation
 
 ### 1. Install Codex
@@ -106,6 +136,7 @@ NotepadLibrary\
     Log.txt
   .notepad-librarian\
     retrieval-index.json
+    settings.json
 ```
 
 Write rough notes in `Inbox\`. Codex organizes them into `Library\`.
@@ -128,6 +159,10 @@ Save this conversation to my Notepad library.
 Show me the most recent context from my Notepad library.
 ```
 
+```text
+Check my Notepad notes for actions.
+```
+
 ## Helper Commands
 
 ```powershell
@@ -135,6 +170,8 @@ python scripts\setup_library.py C:\Users\Alex\Documents\NotepadLibrary --json
 python scripts\organize_library.py C:\Users\Alex\Documents\NotepadLibrary --json
 python scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --json
 python scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --query "lease terms" --json
+python scripts\scan_actions.py C:\Users\Alex\Documents\NotepadLibrary --json
+python scripts\scan_actions.py C:\Users\Alex\Documents\NotepadLibrary --enable-auto-ntl --json
 ```
 
 ## Safety
@@ -143,13 +180,16 @@ python scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --quer
 - It does not automate live Notepad windows.
 - It does not silently delete your notes.
 - Originals are copied to `Library\Archive\Originals\` before Inbox/root copies are removed.
+- Calendar, email, reminder, and task actions are confirmation-gated by default.
+- Automatic action mode applies only to explicit `NTL:` or `note to librarian:` lines.
+- Inferred actions, such as a dated dinner note, always require confirmation.
 - Generated notes are drafts. Review important material before relying on it.
 - This is not financial, legal, medical, travel, or professional advice.
 - The plugin is not a backup system. Keep your own backups.
 
 ## Status
 
-This is the first public bootstrap version. It supports setup, organizing saved `.txt` notes, preserving originals, indexing, and text retrieval. Calendar, reminder, email, and task directives are intentionally deferred until the base workflow is stable.
+This public version supports setup, organizing saved `.txt` notes, preserving originals, indexing, text retrieval, and action proposal scanning for calendar, email, reminder, and task workflows.
 
 ## License
 

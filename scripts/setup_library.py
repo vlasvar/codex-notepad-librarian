@@ -76,6 +76,14 @@ def setup_library(root: Path) -> dict[str, object]:
     if _write_if_missing(root / index_rel, json.dumps({"pages": []}, indent=2) + "\n"):
         created.append(index_rel)
 
+    settings_rel = ".notepad-librarian/settings.json"
+    default_settings = {
+        "auto_act_on_ntl": False,
+        "date_order": "dmy",
+    }
+    if _write_if_missing(root / settings_rel, json.dumps(default_settings, indent=2) + "\n"):
+        created.append(settings_rel)
+
     return {
         "library": str(root),
         "created": created,
