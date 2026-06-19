@@ -1,0 +1,39 @@
+{
+  "name": "codex-notepad-librarian",
+  "version": "0.1.0",
+  "description": "A Windows-first Codex plugin that turns a folder of plain .txt notes into an organized, searchable personal library.",
+  "author": {
+    "name": "Codex Notepad Librarian contributors"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/vlasvar/codex-notepad-librarian",
+  "repository": "https://github.com/vlasvar/codex-notepad-librarian",
+  "keywords": [
+    "codex",
+    "notepad",
+    "plain-text",
+    "notes",
+    "knowledge-management"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Notepad Librarian",
+    "shortDescription": "Organize plain .txt notes written in Windows Notepad.",
+    "longDescription": "A Windows-first Codex plugin that helps users write naturally in Notepad while Codex organizes saved .txt files into a searchable local text library with indexes, recent context, preserved originals, and cited retrieval.",
+    "developerName": "Codex Notepad Librarian contributors",
+    "category": "Productivity",
+    "capabilities": [
+      "Write",
+      "Local files",
+      "Knowledge management",
+      "Plain text",
+      "Retrieval"
+    ],
+    "defaultPrompt": [
+      "Set up my Notepad library.",
+      "Organize my Notepad notes.",
+      "Find what I wrote about this topic.",
+      "Save this conversation to my Notepad library."
+    ]
+  }
+}
