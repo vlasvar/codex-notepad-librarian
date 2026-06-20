@@ -31,8 +31,16 @@ function Run-Codex {
         [string]$StepName
     )
 
-    & codex @Arguments
-    if ($LASTEXITCODE -ne 0) {
+    $output = & codex @Arguments 2>&1
+    $exitCode = $LASTEXITCODE
+    $output | ForEach-Object { Write-Host $_ }
+
+    if ($exitCode -ne 0 -and (($output -join "`n") -match "already")) {
+        Write-Host "$StepName was already done."
+        return
+    }
+
+    if ($exitCode -ne 0) {
         throw "$StepName failed. Please run the manual installation steps in README.md."
     }
 }
