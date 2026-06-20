@@ -25,23 +25,23 @@ function Write-SeedFile {
     }
 }
 
-function Run-Codex {
+function Invoke-Codex {
     param(
         [string[]]$Arguments,
-        [string]$StepName
+        [string]$StepName,
+        [switch]$AllowFailure
     )
 
     $output = & codex @Arguments 2>&1
     $exitCode = $LASTEXITCODE
     $output | ForEach-Object { Write-Host $_ }
 
-    if ($exitCode -ne 0 -and (($output -join "`n") -match "already")) {
-        Write-Host "$StepName was already done."
-        return
+    if ($exitCode -ne 0 -and -not $AllowFailure) {
+        throw "$StepName failed. Please run the manual installation steps in README.md."
     }
 
-    if ($exitCode -ne 0) {
-        throw "$StepName failed. Please run the manual installation steps in README.md."
+    if ($exitCode -ne 0 -and $AllowFailure) {
+        Write-Host "$StepName was not needed. Continuing."
     }
 }
 
@@ -83,22 +83,23 @@ Write-SeedFile (Join-Path $LibraryRoot "Library\Index.txt") "Notepad Librarian I
 Write-SeedFile (Join-Path $LibraryRoot "Library\Hot.txt") "Hot Notes`r`n"
 Write-SeedFile (Join-Path $LibraryRoot "Library\Log.txt") "Notepad Librarian Log`r`n"
 Write-SeedFile (Join-Path $LibraryRoot ".notepad-librarian\retrieval-index.json") '{"pages":[]}'
-Write-SeedFile (Join-Path $LibraryRoot ".notepad-librarian\settings.json") (@'
-{
-  "auto_act_on_ntl": false
-}
-'@)
+Write-SeedFile (Join-Path $LibraryRoot ".notepad-librarian\settings.json") "{`r`n  `"auto_act_on_ntl`": false`r`n}"
 
 Write-Host ""
 if ($SkipCodexInstall) {
     Write-Host "Skipping Codex plugin installation."
 } else {
+    Write-Host "Refreshing Codex local plugin install..."
+    Invoke-Codex -Arguments @("plugin", "remove", "$PluginName@$PluginName") -StepName "Removing old plugin install" -AllowFailure
+    Invoke-Codex -Arguments @("plugin", "marketplace", "remove", $PluginName) -StepName "Removing old marketplace" -AllowFailure
+
+    Write-Host ""
     Write-Host "Adding Codex marketplace..."
-    Run-Codex -Arguments @("plugin", "marketplace", "add", $RepoRoot) -StepName "Adding marketplace"
+    Invoke-Codex -Arguments @("plugin", "marketplace", "add", $RepoRoot) -StepName "Adding marketplace"
 
     Write-Host ""
     Write-Host "Installing plugin..."
-    Run-Codex -Arguments @("plugin", "add", "$PluginName@$PluginName") -StepName "Installing plugin"
+    Invoke-Codex -Arguments @("plugin", "add", "$PluginName@$PluginName") -StepName "Installing plugin"
 }
 
 Write-Host ""

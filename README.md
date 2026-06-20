@@ -175,6 +175,19 @@ python plugins\codex-notepad-librarian\scripts\setup_library.py C:\Users\Alex\Do
 
 Start a new Codex thread after installing so the plugin skills load.
 
+
+## Updating
+
+This plugin is installed from a local folder. After downloading new changes, reinstall it so Codex refreshes its cached copy:
+
+```powershell
+cd C:\Users\Alex\Documents\codex-notepad-librarian
+git pull
+.\install.ps1
+```
+
+Then start a new Codex thread so the updated skills load.
+
 ## Folder Layout
 
 ```text
