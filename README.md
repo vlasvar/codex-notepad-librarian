@@ -1,5 +1,7 @@
 # Codex Notepad Librarian
 
+<img width="1248" height="832" alt="bhSIE" src="https://github.com/user-attachments/assets/11adee67-6047-42e1-9c87-20fe8b2cd456" />
+
 A Windows-first Codex plugin for people who want to write notes in Notepad and still have an organized, searchable personal library.
 
 Write plain `.txt` notes. Save them in a folder. Ask Codex to organize them. The Librarian files notes, preserves originals, builds simple indexes, and helps you find what you wrote later.
