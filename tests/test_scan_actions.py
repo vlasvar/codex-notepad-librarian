@@ -36,6 +36,23 @@ class ScanActionsTests(unittest.TestCase):
             self.assertEqual("2027-01-27", action["date"])
             self.assertTrue(action["requires_confirmation"])
 
+    def test_greek_ntl_appointment_is_calendar_action(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "NotepadLibrary"
+            setup_library(root)
+            (root / "Inbox" / "appointment.txt").write_text(
+                "NTL: Ραντεβού για Συμβόλαια Τενέδου 16, Σάββατο 20/6/2026\n",
+                encoding="utf-8",
+            )
+
+            result = scan_actions(root)
+
+            self.assertEqual(1, len(result["actions"]))
+            action = result["actions"][0]
+            self.assertEqual("calendar", action["kind"])
+            self.assertEqual("2026-06-20", action["date"])
+            self.assertTrue(action["requires_confirmation"])
+
     def test_settings_file_accepts_utf8_bom(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "NotepadLibrary"

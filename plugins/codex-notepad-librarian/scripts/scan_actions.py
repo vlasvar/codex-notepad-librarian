@@ -78,7 +78,7 @@ def _parse_dmy_date(text: str) -> str | None:
 
 def _classify_explicit(text: str) -> str:
     lower = text.lower()
-    if any(word in lower for word in ["calendar", "event", "appointment", "meeting", "dinner"]):
+    if any(word in lower for word in ["calendar", "event", "appointment", "meeting", "dinner", "ραντεβού", "ραντεβου", "συνάντηση", "συναντηση", "δείπνο", "δειπνο"]):
         return "calendar"
     if any(word in lower for word in ["email", "mail", "send", "reply"]):
         return "email"
