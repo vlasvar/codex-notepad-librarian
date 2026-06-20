@@ -99,25 +99,41 @@ cd codex-notepad-librarian
 
 ### 3. Add The Plugin To Codex
 
-First, check if the Codex CLI is installed.
+First, check if the Codex CLI is installed:
 
 Open PowerShell and run:
+
 ```powershell
 codex --version
 ```
-If you see a version number, you already have the Codex CLI. Run this command from inside the codex-notepad-librarian folder:
-```powershell
-codex plugin add codex-notepad-librarian@personal
-```
-If PowerShell says codex is not recognized, install the Codex CLI first.
-In PowerShell, run:
+
+If you see a version number, you already have the Codex CLI.
+
+If PowerShell says `codex` is not recognized, install the Codex CLI:
+
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
 ```
-After installation finishes, close PowerShell, open it again, Then add the plugin:
+
+Close PowerShell, open it again, and check:
+
 ```powershell
-codex plugin add codex-notepad-librarian@personal
+codex --version
 ```
+
+Next, add this downloaded repo as a Codex plugin marketplace. Run this from the folder that contains `codex-notepad-librarian`:
+
+```powershell
+cd C:\Users\Alex\Documents
+codex plugin marketplace add .\codex-notepad-librarian
+```
+
+Then install the plugin from that marketplace:
+
+```powershell
+codex plugin add codex-notepad-librarian@codex-notepad-librarian
+```
+
 Start a new Codex thread after installing so the plugin skills load.
 
 ### 4. Set Up A Notes Folder

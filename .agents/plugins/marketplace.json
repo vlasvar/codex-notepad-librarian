@@ -1,0 +1,20 @@
+{
+  "name": "codex-notepad-librarian",
+  "interface": {
+    "displayName": "Codex Notepad Librarian"
+  },
+  "plugins": [
+    {
+      "name": "codex-notepad-librarian",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
