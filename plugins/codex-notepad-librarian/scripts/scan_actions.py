@@ -33,7 +33,7 @@ def load_settings(root: Path) -> dict[str, object]:
         setup_library(root)
     if not path.exists():
         return dict(DEFAULT_SETTINGS)
-    loaded = json.loads(path.read_text(encoding="utf-8"))
+    loaded = json.loads(path.read_text(encoding="utf-8-sig"))
     settings = dict(DEFAULT_SETTINGS)
     settings.update({key: loaded[key] for key in DEFAULT_SETTINGS.keys() & loaded.keys()})
     return settings

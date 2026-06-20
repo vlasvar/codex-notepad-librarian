@@ -36,6 +36,25 @@ class ScanActionsTests(unittest.TestCase):
             self.assertEqual("2027-01-27", action["date"])
             self.assertTrue(action["requires_confirmation"])
 
+    def test_settings_file_accepts_utf8_bom(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "NotepadLibrary"
+            setup_library(root)
+            settings = root / ".notepad-librarian" / "settings.json"
+            settings.write_text(
+                '{"auto_act_on_ntl": false, "date_order": "dmy"}\n',
+                encoding="utf-8-sig",
+            )
+            (root / "Inbox" / "calendar note.txt").write_text(
+                "NTL: make a calendar event for dinner with Cassy at Belvedere Hotel Prague on 27/1/2027\n",
+                encoding="utf-8",
+            )
+
+            result = scan_actions(root)
+
+            self.assertEqual(1, len(result["actions"]))
+            self.assertTrue(result["actions"][0]["requires_confirmation"])
+
     def test_explicit_ntl_can_be_auto_allowed_when_setting_is_enabled(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "NotepadLibrary"
