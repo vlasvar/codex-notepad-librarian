@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import _paths
 from scripts.setup_library import REQUIRED_DIRS, REQUIRED_FILES, setup_library
 
 

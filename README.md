@@ -147,7 +147,7 @@ Set up my Notepad library at C:\Users\Alex\Documents\NotepadLibrary.
 Or run the helper directly:
 
 ```powershell
-python scripts\setup_library.py C:\Users\Alex\Documents\NotepadLibrary --json
+python plugins\codex-notepad-librarian\scripts\setup_library.py C:\Users\Alex\Documents\NotepadLibrary --json
 ```
 
 ## Folder Layout
@@ -197,12 +197,12 @@ Check my Notepad notes for actions.
 ## Helper Commands
 
 ```powershell
-python scripts\setup_library.py C:\Users\Alex\Documents\NotepadLibrary --json
-python scripts\organize_library.py C:\Users\Alex\Documents\NotepadLibrary --json
-python scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --json
-python scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --query "lease terms" --json
-python scripts\scan_actions.py C:\Users\Alex\Documents\NotepadLibrary --json
-python scripts\scan_actions.py C:\Users\Alex\Documents\NotepadLibrary --enable-auto-ntl --json
+python plugins\codex-notepad-librarian\scripts\setup_library.py C:\Users\Alex\Documents\NotepadLibrary --json
+python plugins\codex-notepad-librarian\scripts\organize_library.py C:\Users\Alex\Documents\NotepadLibrary --json
+python plugins\codex-notepad-librarian\scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --json
+python plugins\codex-notepad-librarian\scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --query "lease terms" --json
+python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Documents\NotepadLibrary --json
+python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Documents\NotepadLibrary --enable-auto-ntl --json
 ```
 
 ## Safety

@@ -2,6 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import _paths
 from scripts.organize_library import organize_library
 from scripts.setup_library import setup_library
 

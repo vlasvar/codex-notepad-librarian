@@ -8,7 +8,7 @@
       "name": "codex-notepad-librarian",
       "source": {
         "source": "local",
-        "path": "./"
+        "path": "./plugins/codex-notepad-librarian"
       },
       "policy": {
         "installation": "AVAILABLE",

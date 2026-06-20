@@ -2,10 +2,12 @@ import json
 import unittest
 from pathlib import Path
 
+from _paths import PLUGIN_ROOT
+
 
 class PluginManifestTests(unittest.TestCase):
     def test_manifest_declares_plugin_and_skills(self):
-        manifest = json.loads(Path(".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+        manifest = json.loads((PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
 
         self.assertEqual("codex-notepad-librarian", manifest["name"])
         self.assertEqual("./skills/", manifest["skills"])
@@ -18,7 +20,8 @@ class PluginManifestTests(unittest.TestCase):
         self.assertEqual("codex-notepad-librarian", marketplace["name"])
         self.assertEqual("Codex Notepad Librarian", marketplace["interface"]["displayName"])
         self.assertEqual("codex-notepad-librarian", marketplace["plugins"][0]["name"])
-        self.assertEqual("./", marketplace["plugins"][0]["source"]["path"])
+        self.assertEqual("./plugins/codex-notepad-librarian", marketplace["plugins"][0]["source"]["path"])
+        self.assertTrue((PLUGIN_ROOT / ".codex-plugin" / "plugin.json").is_file())
 
 
 if __name__ == "__main__":

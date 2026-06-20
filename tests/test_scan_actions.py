@@ -2,6 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import _paths
 from scripts.scan_actions import load_settings, scan_actions, update_settings
 from scripts.setup_library import setup_library
 
