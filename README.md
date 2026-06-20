@@ -62,7 +62,11 @@ or:
 note to librarian: create a task to call the hotel on 27/1/2027
 ```
 
-Codex scans these lines and proposes calendar, email, reminder, or task actions.
+`NTL:` is the cleanest command, but the Librarian also understands close forms like `note to librarian:`, `note to librari:`, and `not to librari:`.
+
+It can recognize simple Greek and Greeklish action language too, such as appointment, coffee, email, Word document, and Google Sheet requests.
+
+Codex scans these lines and proposes calendar, email, reminder, task, Word document, spreadsheet, PDF, or presentation actions.
 
 The Librarian can also notice date-like notes even without `NTL:`:
 
@@ -232,7 +236,7 @@ python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Doc
 - It does not automate live Notepad windows.
 - It does not silently delete your notes.
 - Originals are copied to `Library\Archive\Originals\` before Inbox/root copies are removed.
-- Calendar, email, reminder, and task actions are confirmation-gated by default.
+- Calendar, email, reminder, task, document, spreadsheet, PDF, and presentation actions are confirmation-gated by default.
 - Automatic action mode applies only to explicit `NTL:` or `note to librarian:` lines.
 - Inferred actions, such as a dated dinner note, always require confirmation.
 - Generated notes are drafts. Review important material before relying on it.
@@ -241,7 +245,7 @@ python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Doc
 
 ## Status
 
-This public version supports setup, organizing saved `.txt` notes, preserving originals, indexing, text retrieval, and action proposal scanning for calendar, email, reminder, and task workflows.
+This public version supports setup, organizing saved `.txt` notes, preserving originals, indexing, text retrieval, and action proposal scanning for calendar, email, reminder, task, document, spreadsheet, PDF, and presentation workflows.
 
 ## License
 

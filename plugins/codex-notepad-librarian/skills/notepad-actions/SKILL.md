@@ -1,6 +1,6 @@
 ---
 name: notepad-actions
-description: Use when the user asks to act on Notepad notes, scan NTL directives, create calendar events, reminders, emails, or tasks from plain .txt notes, or identify dated events in notes.
+description: Use when the user asks to act on Notepad notes, scan NTL directives, create calendar events, reminders, emails, tasks, Word documents, PDFs, presentations, or spreadsheets from plain .txt notes, or identify dated events in notes.
 ---
 
 # Notepad Actions
@@ -14,7 +14,11 @@ Explicit directives:
 ```text
 NTL: make a calendar event for dinner with Cassy at Belvedere Hotel Prague on 27/1/2027
 note to librarian: create a task to call the hotel on 27/1/2027
+not to librari: remind me to check the contract on 21/2/2026
+NTL: make a google sheet out of this note
 ```
+
+`NTL:` is the main command form. Also accept close variants such as `note to librarian:`, `note to librari:`, `not to librarian:`, and `not to librari:`.
 
 Inferred event example:
 
@@ -47,7 +51,7 @@ python scripts\scan_actions.py <folder> --enable-auto-ntl --json
 python scripts\scan_actions.py <folder> --disable-auto-ntl --json
 ```
 
-Automatic mode applies only to explicit `NTL:` or `note to librarian:` lines. It does not apply to inferred dated text.
+Automatic mode applies only to explicit `NTL:` or recognized librarian directive lines. It does not apply to inferred dated text.
 
 ## Action Handling
 
@@ -55,5 +59,9 @@ Automatic mode applies only to explicit `NTL:` or `note to librarian:` lines. It
 - `email`: draft or send only after confirmation or when explicit NTL auto mode allows it.
 - `reminder`: create a reminder through the available reminder/task tool when possible.
 - `task`: create a task through the available task tool when possible.
+- `word_document`: create or draft a Word document from the note when document tools are available.
+- `spreadsheet`: create or draft an Excel file or Google Sheet from the note when spreadsheet tools are available.
+- `pdf`: create or draft a PDF from the note when document/PDF tools are available.
+- `presentation`: create or draft slides from the note when presentation tools are available.
 
 When a connector is unavailable, summarize the action and tell the user what could not be completed.
