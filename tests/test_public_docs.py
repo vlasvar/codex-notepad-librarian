@@ -14,6 +14,15 @@ class PublicDocsTests(unittest.TestCase):
         self.assertNotRegex(text, re.compile(r"ghp_[A-Za-z0-9_]{20,}"))
         self.assertIn(r"C:\Users\Alex\Documents\NotepadLibrary", text)
 
+    def test_public_scripts_do_not_contain_personal_paths_or_secrets(self):
+        text = Path("install.ps1").read_text(encoding="utf-8")
+
+        self.assertNotIn("v" + "vare", text.lower())
+        self.assertNotIn("00" + "_Notes", text)
+        self.assertNotRegex(text, re.compile(r"C:\\Users\\(?!Alex)", re.IGNORECASE))
+        self.assertNotRegex(text, re.compile(r"sk-[A-Za-z0-9_-]{20,}"))
+        self.assertNotRegex(text, re.compile(r"ghp_[A-Za-z0-9_]{20,}"))
+
 
 if __name__ == "__main__":
     unittest.main()

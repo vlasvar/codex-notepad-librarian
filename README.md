@@ -80,9 +80,23 @@ By default, the plugin asks before creating anything outside the text library. Y
 
 ## Installation
 
-### 1. Install Codex
+### 1. Install Codex CLI
 
-Install Codex using the current OpenAI instructions for your computer. Then check it works:
+Open PowerShell and check if Codex is already installed:
+
+```powershell
+codex --version
+```
+
+If you see a version number, you already have it.
+
+If PowerShell says `codex` is not recognized, install Codex CLI:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+```
+
+Close PowerShell, open it again, and check:
 
 ```powershell
 codex --version
@@ -97,31 +111,34 @@ git clone https://github.com/vlasvar/codex-notepad-librarian.git
 cd codex-notepad-librarian
 ```
 
-### 3. Add The Plugin To Codex
+### 3A. Automatic Setup
 
-First, check if the Codex CLI is installed:
-
-Open PowerShell and run:
+Run this from inside the `codex-notepad-librarian` folder:
 
 ```powershell
-codex --version
+.\install.ps1
 ```
 
-If you see a version number, you already have the Codex CLI.
+This will:
 
-If PowerShell says `codex` is not recognized, install the Codex CLI:
+- create a notes folder in your Documents folder, like `C:\Users\Alex\Documents\NotepadLibrary`
+- create the `Inbox`, `Library`, and index files
+- add this plugin as a local Codex marketplace
+- install the plugin into Codex
+
+Start a new Codex thread after installing so the plugin skills load.
+
+To use a different notes folder:
 
 ```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+.\install.ps1 -LibraryPath C:\Users\Alex\Documents\MyNotes
 ```
 
-Close PowerShell, open it again, and check:
+### 3B. Manual Setup
 
-```powershell
-codex --version
-```
+Use these steps if you want to do everything yourself.
 
-Next, add this downloaded repo as a Codex plugin marketplace. Run this from the folder that contains `codex-notepad-librarian`:
+Run this from the folder that contains `codex-notepad-librarian`:
 
 ```powershell
 cd C:\Users\Alex\Documents
@@ -134,11 +151,13 @@ Then install the plugin from that marketplace:
 codex plugin add codex-notepad-librarian@codex-notepad-librarian
 ```
 
-Start a new Codex thread after installing so the plugin skills load.
+Create your notes folder:
 
-### 4. Set Up A Notes Folder
+```powershell
+mkdir C:\Users\Alex\Documents\NotepadLibrary
+```
 
-Ask Codex:
+Start a new Codex thread and ask:
 
 ```text
 Set up my Notepad library at C:\Users\Alex\Documents\NotepadLibrary.
@@ -149,6 +168,8 @@ Or run the helper directly:
 ```powershell
 python plugins\codex-notepad-librarian\scripts\setup_library.py C:\Users\Alex\Documents\NotepadLibrary --json
 ```
+
+Start a new Codex thread after installing so the plugin skills load.
 
 ## Folder Layout
 
