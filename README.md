@@ -88,7 +88,7 @@ codex --version
 
 ### 2. Download This Plugin
 
-Open PowerShell in a folder where you keep projects:
+Open PowerShell in any folder where you want to download the plugin. Keep this folder after installation, because Codex will use it as the local plugin source.
 
 ```powershell
 git clone https://github.com/vlasvar/codex-notepad-librarian.git
