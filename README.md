@@ -8,6 +8,12 @@ Write plain `.txt` or `.md` notes. Save them in a folder. Ask Codex to organize 
 
 No required Obsidian. No special app. No database. Just local files.
 
+## 🇬🇷 Ελληνικά / Greek Users
+
+Υπάρχει απλός ελληνικός οδηγός χρήσης εδώ: [README.el.md](README.el.md).
+
+Αν γράφετε σημειώσεις στα ελληνικά ή greeklish, μπορείτε να χρησιμοποιήσετε το ίδιο installation flow. Το plugin δουλεύει με τοπικά αρχεία, δημιουργεί searchable Markdown memory files, και κρατά τις εξωτερικές ενέργειες confirmation-first.
+
 ## Simple Example
 
 Create this file:

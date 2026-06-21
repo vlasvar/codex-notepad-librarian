@@ -42,6 +42,26 @@ class PublicDocsTests(unittest.TestCase):
         self.assertIn('"languages"', text)
         self.assertIn("Process my Notepad library", text)
 
+    def test_readme_links_to_greek_user_guide(self):
+        text = Path("README.md").read_text(encoding="utf-8")
+
+        self.assertIn("🇬🇷 Ελληνικά / Greek Users", text)
+        self.assertIn("[README.el.md](README.el.md)", text)
+
+    def test_greek_readme_is_public_safe_and_practical(self):
+        text = Path("README.el.md").read_text(encoding="utf-8")
+
+        self.assertIn("# Codex Notepad Librarian - Ελληνικός οδηγός", text)
+        self.assertIn(".\\install.ps1", text)
+        self.assertIn("Process my Notepad library", text)
+        self.assertIn("Add Tesseract configuration to my Notepad library.", text)
+        self.assertIn(r"C:\Users\Alex\Documents\NotepadLibrary", text)
+        self.assertNotIn("v" + "vare", text.lower())
+        self.assertNotIn("00" + "_Notes", text)
+        self.assertNotRegex(text, re.compile(r"C:\\Users\\(?!Alex)", re.IGNORECASE))
+        self.assertNotRegex(text, re.compile(r"sk-[A-Za-z0-9_-]{20,}"))
+        self.assertNotRegex(text, re.compile(r"ghp_[A-Za-z0-9_]{20,}"))
+
 
 if __name__ == "__main__":
     unittest.main()
