@@ -2,11 +2,11 @@
 
 <img width="1248" height="832" alt="bhSIE" src="https://github.com/user-attachments/assets/11adee67-6047-42e1-9c87-20fe8b2cd456" />
 
-A Windows-first Codex plugin for people who want to write notes in Notepad and still have an organized, searchable personal library.
+A Windows-first Codex plugin for people who want to write notes in Notepad or plain folders and still have an organized, searchable local memory library.
 
-Write plain `.txt` notes. Save them in a folder. Ask Codex to organize them. The Librarian files notes, preserves originals, builds simple indexes, and helps you find what you wrote later.
+Write plain `.txt` or `.md` notes. Save them in a folder. Ask Codex to organize or process them. The Librarian can still file classic `.txt` notes, and it can also process Inbox sources into portable Markdown document memory, dated review notes, OCR setup reports, simple indexes, and searchable snippets.
 
-No Obsidian. No special app. No database. Just text files.
+No required Obsidian. No special app. No database. Just local files.
 
 ## Simple Example
 
@@ -33,6 +33,8 @@ Organize my Notepad notes in C:\Users\Alex\Documents\NotepadLibrary.
 Codex can create:
 
 ```text
+Library\Documents\lease-note-<hash>.md
+Library\Reviews\2026-06-21 Processing Review.md
 Library\Sources\lease-note.txt
 Library\Archive\Originals\lease note.txt
 Library\Index.txt
@@ -47,6 +49,22 @@ Find what I wrote about the office lease.
 ```
 
 Codex searches the text library and answers with the relevant file path and snippet.
+
+For scanned PDFs, the Librarian reports OCR setup status instead of failing the whole run. Configure Tesseract paths later if you want OCR extraction.
+
+## PDFs And OCR
+
+You can put PDF files in `Inbox\` too. In v0.2, the Librarian treats PDFs conservatively: it records that the PDF needs OCR setup and keeps processing your normal notes instead of failing the whole run.
+
+The plugin does not need Tesseract to process normal `.txt` or `.md` notes.
+
+When you are ready to work with scanned PDFs, ask Codex:
+
+```text
+Add Tesseract configuration to my Notepad library.
+```
+
+Codex can then help you install or point to Tesseract, set the `tesseract_path`, set the `tessdata_dir`, and choose OCR languages in `.notepad-librarian\settings.json`.
 
 ## Action Notes
 
@@ -127,6 +145,7 @@ This will:
 
 - create a notes folder in your Documents folder, like `C:\Users\Alex\Documents\NotepadLibrary`
 - create the `Inbox`, `Library`, and index files
+- create folders for Markdown document memory and processing reviews
 - add this plugin as a local Codex marketplace
 - install the plugin into Codex
 
@@ -194,6 +213,8 @@ Then start a new Codex thread so the updated skills load.
 NotepadLibrary\
   Inbox\
   Library\
+    Documents\
+    Reviews\
     Sources\
     Ideas\
     People\
@@ -204,11 +225,12 @@ NotepadLibrary\
     Hot.txt
     Log.txt
   .notepad-librarian\
+    processed-files.json
     retrieval-index.json
     settings.json
 ```
 
-Write rough notes in `Inbox\`. Codex organizes them into `Library\`.
+Write rough notes in `Inbox\`. Codex can organize classic `.txt` notes into `Library\Sources\`, or process `.txt`, `.md`, and OCR-pending PDFs into `Library\Documents\` and `Library\Reviews\`.
 
 ## Useful Prompts
 
@@ -237,6 +259,8 @@ Check my Notepad notes for actions.
 ```powershell
 python plugins\codex-notepad-librarian\scripts\setup_library.py C:\Users\Alex\Documents\NotepadLibrary --json
 python plugins\codex-notepad-librarian\scripts\organize_library.py C:\Users\Alex\Documents\NotepadLibrary --json
+python plugins\codex-notepad-librarian\scripts\process_library.py C:\Users\Alex\Documents\NotepadLibrary --json
+python plugins\codex-notepad-librarian\scripts\ocr_status.py C:\Users\Alex\Documents\NotepadLibrary --json
 python plugins\codex-notepad-librarian\scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --json
 python plugins\codex-notepad-librarian\scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --query "lease terms" --json
 python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Documents\NotepadLibrary --json
@@ -245,10 +269,12 @@ python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Doc
 
 ## Safety
 
-- The plugin works on local `.txt` files.
+- The plugin works on local `.txt`, `.md`, and OCR-pending PDF files.
 - It does not automate live Notepad windows.
 - It does not silently delete your notes.
 - Originals are copied to `Library\Archive\Originals\` before Inbox/root copies are removed.
+- Processing state is stored in `.notepad-librarian\processed-files.json` so unchanged Inbox files can be skipped.
+- Missing Tesseract or language data is reported as OCR setup work; it is not a hard requirement for the processing loop.
 - Calendar, email, reminder, task, document, spreadsheet, PDF, and presentation actions are confirmation-gated by default.
 - Automatic action mode applies only to explicit `NTL:` or `note to librarian:` lines.
 - Inferred actions, such as a dated dinner note, always require confirmation.
@@ -258,7 +284,7 @@ python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Doc
 
 ## Status
 
-This public version supports setup, organizing saved `.txt` notes, preserving originals, indexing, text retrieval, and action proposal scanning for calendar, email, reminder, task, document, spreadsheet, PDF, and presentation workflows.
+This public version supports setup, organizing saved `.txt` notes, processing Inbox `.txt`/`.md`/OCR-pending PDF sources, generating portable Markdown document memory and dated review notes, indexing `.txt` and Markdown memory files, OCR setup reporting, text retrieval, and action proposal scanning for calendar, email, reminder, task, document, spreadsheet, PDF, and presentation workflows.
 
 ## License
 

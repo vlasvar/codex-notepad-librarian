@@ -10,9 +10,10 @@ class PluginManifestTests(unittest.TestCase):
         manifest = json.loads((PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
 
         self.assertEqual("codex-notepad-librarian", manifest["name"])
+        self.assertEqual("0.2.0", manifest["version"])
         self.assertEqual("./skills/", manifest["skills"])
         self.assertIn("Notepad Librarian", manifest["interface"]["displayName"])
-        self.assertIn("plain .txt notes", manifest["description"])
+        self.assertIn("folder-based notes", manifest["description"])
 
     def test_repo_declares_local_marketplace(self):
         marketplace = json.loads(Path(".agents/plugins/marketplace.json").read_text(encoding="utf-8"))

@@ -1,11 +1,11 @@
 ---
 name: notepad-actions
-description: Use when the user asks to act on Notepad notes, scan NTL directives, create calendar events, reminders, emails, tasks, Word documents, PDFs, presentations, or spreadsheets from plain .txt notes, or identify dated events in notes.
+description: Use when the user asks to act on Notepad notes, scan NTL directives, create calendar events, reminders, emails, tasks, Word documents, PDFs, presentations, or spreadsheets from local notes, or identify dated events in notes.
 ---
 
 # Notepad Actions
 
-Scan a Notepad Librarian folder for explicit action directives and inferred dated events.
+Scan a Notepad Librarian folder for explicit action directives and inferred dated events. Action handling remains approval-first even as the memory loop adds Markdown document notes.
 
 ## Directive Forms
 

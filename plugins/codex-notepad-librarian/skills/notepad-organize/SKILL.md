@@ -1,11 +1,11 @@
 ---
 name: notepad-organize
-description: Use when the user says organize, tidy, file, clean up, or maintain my Notepad notes or plain .txt library.
+description: Use when the user says organize, tidy, file, clean up, process, or maintain my Notepad notes or local memory library.
 ---
 
 # Notepad Organize
 
-Organize saved `.txt` notes into the Notepad Librarian library.
+Organize saved `.txt` notes into the classic Notepad Librarian library, or process Inbox `.txt`, `.md`, and PDF sources into Markdown document memory.
 
 ## Workflow
 
@@ -16,18 +16,27 @@ Organize saved `.txt` notes into the Notepad Librarian library.
 python scripts\setup_library.py <folder> --json
 ```
 
-3. Run the organizer:
+3. For the classic `.txt` organizer, run:
 
 ```powershell
 python scripts\organize_library.py <folder> --json
 ```
 
-4. Report a short summary:
+4. For the memory loop, run:
+
+```powershell
+python scripts\process_library.py <folder> --json
+```
+
+5. Report a short summary:
    - notes created
    - originals archived
    - notes skipped
    - updated `Library\Index.txt`, `Library\Hot.txt`, and `Library\Log.txt`
-5. Scan for possible actions:
+   - processed and skipped Inbox sources
+   - generated `Library\Documents\*.md`
+   - dated `Library\Reviews\* Processing Review.md`
+6. Scan for possible actions:
 
 ```powershell
 python scripts\scan_actions.py <folder> --json
@@ -37,7 +46,8 @@ Report proposed actions after the organization summary. Ask before acting on inf
 
 ## Rules
 
-- Scan `Inbox\` and loose root `.txt` files.
+- Scan `Inbox\` and loose root `.txt` files for classic organization.
+- Scan `Inbox\` `.txt`, `.md`, and PDF files for the memory loop.
 - Skip `Library\Archive\Originals\` and `.notepad-librarian\`.
-- Keep files as `.txt`.
-- Do not create Obsidian files or Markdown-only syntax.
+- Keep classic organized files as `.txt`.
+- Generated memory files may use portable Markdown with frontmatter and wikilinks, but do not require Obsidian.

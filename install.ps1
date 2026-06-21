@@ -67,6 +67,8 @@ Write-Host $LibraryRoot
 
 $dirs = @(
     "Inbox",
+    "Library\Documents",
+    "Library\Reviews",
     "Library\Sources",
     "Library\Ideas",
     "Library\People",
@@ -83,7 +85,22 @@ Write-SeedFile (Join-Path $LibraryRoot "Library\Index.txt") "Notepad Librarian I
 Write-SeedFile (Join-Path $LibraryRoot "Library\Hot.txt") "Hot Notes`r`n"
 Write-SeedFile (Join-Path $LibraryRoot "Library\Log.txt") "Notepad Librarian Log`r`n"
 Write-SeedFile (Join-Path $LibraryRoot ".notepad-librarian\retrieval-index.json") '{"pages":[]}'
-Write-SeedFile (Join-Path $LibraryRoot ".notepad-librarian\settings.json") "{`r`n  `"auto_act_on_ntl`": false`r`n}"
+$ProcessedFilesName = "processed-files.json"
+Write-SeedFile (Join-Path (Join-Path $LibraryRoot ".notepad-librarian") $ProcessedFilesName) '{"files":{}}'
+$SettingsJson = @'
+{
+  "auto_act_on_ntl": false,
+  "date_order": "dmy",
+  "ocr": {
+    "tesseract_path": "",
+    "tessdata_dir": "",
+    "languages": [
+      "eng"
+    ]
+  }
+}
+'@
+Write-SeedFile (Join-Path $LibraryRoot ".notepad-librarian\settings.json") $SettingsJson
 
 Write-Host ""
 if ($SkipCodexInstall) {
@@ -105,4 +122,5 @@ if ($SkipCodexInstall) {
 Write-Host ""
 Write-Host "Done."
 Write-Host "Notes folder: $LibraryRoot"
-Write-Host "Start a new Codex thread and ask: Organize my Notepad notes in $LibraryRoot"
+Write-Host "Start a new Codex thread and ask: Process my Notepad library in $LibraryRoot"
+Write-Host "For scanned PDFs, ask: Add Tesseract configuration to my Notepad library."

@@ -23,6 +23,25 @@ class PublicDocsTests(unittest.TestCase):
         self.assertNotRegex(text, re.compile(r"sk-[A-Za-z0-9_-]{20,}"))
         self.assertNotRegex(text, re.compile(r"ghp_[A-Za-z0-9_]{20,}"))
 
+    def test_readme_explains_tesseract_setup_as_codex_assisted(self):
+        text = Path("README.md").read_text(encoding="utf-8")
+
+        self.assertIn("PDFs And OCR", text)
+        self.assertIn('Add Tesseract configuration to my Notepad library.', text)
+        self.assertIn("does not need Tesseract to process normal `.txt` or `.md` notes", text)
+
+    def test_installer_creates_public_v02_memory_loop_structure(self):
+        text = Path("install.ps1").read_text(encoding="utf-8")
+
+        self.assertIn('"Library\\Documents"', text)
+        self.assertIn('"Library\\Reviews"', text)
+        self.assertIn('"processed-files.json"', text)
+        self.assertIn('"ocr"', text)
+        self.assertIn('"tesseract_path"', text)
+        self.assertIn('"tessdata_dir"', text)
+        self.assertIn('"languages"', text)
+        self.assertIn("Process my Notepad library", text)
+
 
 if __name__ == "__main__":
     unittest.main()

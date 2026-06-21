@@ -11,6 +11,8 @@ from pathlib import Path
 REQUIRED_DIRS = [
     "Inbox",
     "Library",
+    "Library/Documents",
+    "Library/Reviews",
     "Library/Sources",
     "Library/Ideas",
     "Library/People",
@@ -80,6 +82,11 @@ def setup_library(root: Path) -> dict[str, object]:
     default_settings = {
         "auto_act_on_ntl": False,
         "date_order": "dmy",
+        "ocr": {
+            "tesseract_path": "",
+            "tessdata_dir": "",
+            "languages": ["eng"],
+        },
     }
     if _write_if_missing(root / settings_rel, json.dumps(default_settings, indent=2) + "\n"):
         created.append(settings_rel)

@@ -13,21 +13,27 @@ except ImportError:
     from text_utils import display_title, rel_path, tokens
 
 
-def _library_txt_files(root: Path) -> list[Path]:
+def _library_index_files(root: Path) -> list[Path]:
     library = root / "Library"
     if not library.exists():
         return []
-    return sorted(
+    txt_files = [
         path
         for path in library.rglob("*.txt")
         if path.is_file() and "Archive" not in path.relative_to(library).parts
-    )
+    ]
+    document_files = [
+        path
+        for path in (library / "Documents").glob("*.md")
+        if path.is_file()
+    ]
+    return sorted(txt_files + document_files)
 
 
 def build_retrieval_index(root: Path) -> dict[str, object]:
     root = root.expanduser().resolve()
     pages = []
-    for path in _library_txt_files(root):
+    for path in _library_index_files(root):
         text = path.read_text(encoding="utf-8")
         counts = Counter(tokens(text))
         pages.append(
@@ -48,10 +54,14 @@ def build_retrieval_index(root: Path) -> dict[str, object]:
 
 def _snippet(text: str, query_terms: set[str]) -> str:
     lines = [line.strip() for line in text.splitlines() if line.strip()]
-    for line in lines:
-        lower = line.lower()
-        if any(term in lower for term in query_terms):
-            return line[:240]
+    matches = []
+    for index, line in enumerate(lines):
+        line_terms = tokens(line)
+        score = sum(1 for term in query_terms if term in line_terms)
+        if score:
+            matches.append((score, -index, line))
+    if matches:
+        return sorted(matches, reverse=True)[0][2][:240]
     return (lines[0] if lines else "")[:240]
 
 
@@ -62,7 +72,7 @@ def search_library(root: Path, query: str, *, limit: int = 5) -> list[dict[str, 
         return []
 
     results: list[dict[str, object]] = []
-    for path in _library_txt_files(root):
+    for path in _library_index_files(root):
         text = path.read_text(encoding="utf-8")
         title = display_title(path)
         body_counts = Counter(tokens(text))

@@ -1,11 +1,11 @@
 ---
 name: notepad-librarian
-description: Use when the user wants to set up or maintain a Windows-first plain-text Notepad note library with Codex.
+description: Use when the user wants to set up or maintain a Windows-first Notepad note library and local Markdown memory loop with Codex.
 ---
 
 # Notepad Librarian
 
-Help users write simple `.txt` notes in Windows Notepad while Codex maintains a local, searchable text library.
+Help users write simple notes in Windows Notepad or plain folders while Codex maintains a local, searchable memory library.
 
 The user edits saved files with Notepad. Do not automate live Notepad windows. Work on files in the selected folder.
 
@@ -16,6 +16,8 @@ Use this folder layout:
 ```text
 Inbox/
 Library/
+  Documents/
+  Reviews/
   Sources/
   Ideas/
   People/
@@ -26,11 +28,12 @@ Library/
   Hot.txt
   Log.txt
 .notepad-librarian/
+  processed-files.json
   retrieval-index.json
   settings.json
 ```
 
-All user-facing notes are plain `.txt` files. Do not create Markdown frontmatter, Obsidian wikilinks, `.obsidian/`, or `.canvas` files.
+Inbox sources can be `.txt`, `.md`, or PDF files that may need OCR setup. Generated document memory lives in portable Markdown under `Library\Documents\`, and dated processing reviews live under `Library\Reviews\`. Keep the library Obsidian-compatible, but do not require Obsidian, `.obsidian/`, community plugins, or `.canvas` files.
 
 ## Setup
 
@@ -41,6 +44,18 @@ python scripts\setup_library.py <folder> --json
 ```
 
 Then explain where to write notes: save rough `.txt` files in `Inbox\` or directly in the library root.
+
+To run the memory loop for Inbox sources:
+
+```powershell
+python scripts\process_library.py <folder> --json
+```
+
+To inspect OCR readiness for scanned PDFs:
+
+```powershell
+python scripts\ocr_status.py <folder> --json
+```
 
 ## Action Notes
 
@@ -66,4 +81,5 @@ Default behavior asks before any outward action. If `.notepad-librarian\settings
 - Skip `Library\Archive\Originals\` and `.notepad-librarian\`.
 - Ask before inferred calendar, email, reminder, or task actions.
 - Keep output readable in Notepad.
+- Treat OCR as optional setup: report missing Tesseract or language data, but do not fail the whole processing loop.
 - Use fake paths in public examples, such as `C:\Users\Alex\Documents\NotepadLibrary`.
