@@ -1,10 +1,14 @@
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 
 import _paths
 from scripts.scan_actions import load_settings, scan_actions, update_settings
 from scripts.setup_library import setup_library
+
+
+RUN_DATE = date(2026, 6, 22)
 
 
 class ScanActionsTests(unittest.TestCase):
@@ -17,7 +21,7 @@ class ScanActionsTests(unittest.TestCase):
 
             self.assertFalse(settings["auto_act_on_ntl"])
 
-    def test_explicit_ntl_calendar_action_requires_confirmation_by_default(self):
+    def test_explicit_ntl_calendar_action_is_auto_allowed_by_default(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "NotepadLibrary"
             setup_library(root)
@@ -27,14 +31,14 @@ class ScanActionsTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
             action = result["actions"][0]
             self.assertEqual("explicit", action["trigger"])
             self.assertEqual("calendar", action["kind"])
             self.assertEqual("2027-01-27", action["date"])
-            self.assertTrue(action["requires_confirmation"])
+            self.assertFalse(action["requires_confirmation"])
 
     def test_fuzzy_librarian_prefix_accepts_common_misspelling(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -45,7 +49,7 @@ class ScanActionsTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
             action = result["actions"][0]
@@ -58,35 +62,35 @@ class ScanActionsTests(unittest.TestCase):
             root = Path(tmp) / "NotepadLibrary"
             setup_library(root)
             (root / "Inbox" / "appointment.txt").write_text(
-                "NTL: \u03a1\u03b1\u03bd\u03c4\u03b5\u03b2\u03bf\u03cd \u03b3\u03b9\u03b1 \u03a3\u03c5\u03bc\u03b2\u03cc\u03bb\u03b1\u03b9\u03b1 \u03a4\u03b5\u03bd\u03ad\u03b4\u03bf\u03c5 16, \u03a3\u03ac\u03b2\u03b2\u03b1\u03c4\u03bf 20/6/2026\n",
+                "NTL: \u03a1\u03b1\u03bd\u03c4\u03b5\u03b2\u03bf\u03cd \u03b3\u03b9\u03b1 \u03a3\u03c5\u03bc\u03b2\u03cc\u03bb\u03b1\u03b9\u03b1 \u03a4\u03b5\u03bd\u03ad\u03b4\u03bf\u03c5 16, \u03a3\u03ac\u03b2\u03b2\u03b1\u03c4\u03bf 24/6/2026\n",
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
             action = result["actions"][0]
             self.assertEqual("calendar", action["kind"])
-            self.assertEqual("2026-06-20", action["date"])
-            self.assertTrue(action["requires_confirmation"])
+            self.assertEqual("2026-06-24", action["date"])
+            self.assertFalse(action["requires_confirmation"])
 
     def test_greek_coffee_note_with_date_is_calendar_proposal(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "NotepadLibrary"
             setup_library(root)
             (root / "Inbox" / "coffee.txt").write_text(
-                "\u03b8\u03b1 \u03c0\u03b1\u03c9 \u03b3\u03b9\u03b1 \u03ba\u03b1\u03c6\u03ad \u03bc\u03b5 \u03a4\u03af\u03bc\u03b7 21/2/2026 7\u03bc\u03bc\n",
+                "\u03b8\u03b1 \u03c0\u03b1\u03c9 \u03b3\u03b9\u03b1 \u03ba\u03b1\u03c6\u03ad \u03bc\u03b5 \u03a4\u03af\u03bc\u03b7 21/2/2027 7\u03bc\u03bc\n",
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
             action = result["actions"][0]
             self.assertEqual("inferred", action["trigger"])
             self.assertEqual("calendar", action["kind"])
-            self.assertEqual("2026-02-21", action["date"])
-            self.assertTrue(action["requires_confirmation"])
+            self.assertEqual("2027-02-21", action["date"])
+            self.assertFalse(action["requires_confirmation"])
 
     def test_greeklish_email_request_is_email_action(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -97,7 +101,7 @@ class ScanActionsTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
             self.assertEqual("email", result["actions"][0]["kind"])
@@ -111,7 +115,7 @@ class ScanActionsTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
             self.assertEqual("word_document", result["actions"][0]["kind"])
@@ -125,7 +129,7 @@ class ScanActionsTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
             self.assertEqual("spreadsheet", result["actions"][0]["kind"])
@@ -144,10 +148,10 @@ class ScanActionsTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
-            self.assertTrue(result["actions"][0]["requires_confirmation"])
+            self.assertFalse(result["actions"][0]["requires_confirmation"])
 
     def test_explicit_ntl_can_be_auto_allowed_when_setting_is_enabled(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -159,13 +163,23 @@ class ScanActionsTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
             action = result["actions"][0]
             self.assertEqual("task", action["kind"])
             self.assertEqual("explicit", action["trigger"])
             self.assertFalse(action["requires_confirmation"])
+
+    def test_update_settings_preserves_ocr_settings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "NotepadLibrary"
+            setup_library(root)
+
+            settings = update_settings(root, auto_act_on_ntl=True)
+
+            self.assertIn("ocr", settings)
+            self.assertEqual(["ell", "eng"], settings["ocr"]["languages"])
 
     def test_plain_dated_note_is_inferred_calendar_proposal(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -176,7 +190,7 @@ class ScanActionsTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = scan_actions(root)
+            result = scan_actions(root, today=RUN_DATE)
 
             self.assertEqual(1, len(result["actions"]))
             action = result["actions"][0]
@@ -184,7 +198,20 @@ class ScanActionsTests(unittest.TestCase):
             self.assertEqual("calendar", action["kind"])
             self.assertEqual("2027-01-27", action["date"])
             self.assertIn("dinner with Cassy", action["title"])
-            self.assertTrue(action["requires_confirmation"])
+            self.assertFalse(action["requires_confirmation"])
+
+    def test_past_calendar_actions_are_ignored(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "NotepadLibrary"
+            setup_library(root)
+            (root / "Inbox" / "old appointment.txt").write_text(
+                "NTL: make a calendar event for signing papers on 20/6/2026\n",
+                encoding="utf-8",
+            )
+
+            result = scan_actions(root, today=RUN_DATE)
+
+            self.assertEqual([], result["actions"])
 
 
 if __name__ == "__main__":

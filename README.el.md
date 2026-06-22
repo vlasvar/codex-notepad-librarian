@@ -12,7 +12,10 @@
 - Δημιουργεί Markdown memory files στο `Library\Documents`.
 - Δημιουργεί ημερήσιο review στο `Library\Reviews`.
 - Φτιάχνει index ώστε μετά να ρωτάτε το Codex τι έχετε γράψει.
-- Μπορεί να εντοπίζει απλές ενέργειες από σημειώσεις, αλλά ζητά επιβεβαίωση πριν κάνει κάτι εξωτερικό.
+- Μπορεί να εντοπίζει απλές ενέργειες από σημειώσεις.
+- Τα μελλοντικά calendar events μπορούν να δημιουργηθούν χωρίς νέο approval prompt.
+- Τα παλιά calendar events αγνοούνται αυτόματα με βάση την ημερομηνία του run.
+- Κρατά action state ώστε να μην δημιουργεί διπλά calendar events στο επόμενο run.
 
 Δεν χρειάζεται Obsidian. Τα Markdown αρχεία είναι απλά αρχεία που μπορείτε να ανοίξετε και με Notepad.
 
@@ -76,6 +79,7 @@ NotepadLibrary\
       Originals\
   .notepad-librarian\
     processed-files.json
+    action-state.json
     retrieval-index.json
     settings.json
 ```
@@ -133,7 +137,9 @@ What did I write about the office lease?
 
 ## 6. PDF και Tesseract
 
-Μπορείτε να βάλετε PDF στο `Inbox`, αλλά η έκδοση v0.2 είναι συντηρητική: δεν προσποιείται ότι κάνει OCR αν δεν έχει γίνει setup. Θα σημειώσει ότι το PDF χρειάζεται OCR configuration και θα συνεχίσει κανονικά με τα `.txt` και `.md` αρχεία.
+Μπορείτε να βάλετε PDF στο `Inbox`. Το plugin πρώτα δοκιμάζει να βρει έτοιμο text layer στο PDF. Αν το PDF είναι scanned, μπορεί να χρησιμοποιήσει Tesseract OCR όταν υπάρχουν τα τοπικά εργαλεία και τα σωστά language data.
+
+Αν λείπει κάτι από το OCR setup, θα το σημειώσει καθαρά και θα συνεχίσει κανονικά με τα `.txt` και `.md` αρχεία.
 
 Το plugin δεν χρειάζεται Tesseract για απλές `.txt` ή `.md` σημειώσεις.
 
@@ -143,9 +149,33 @@ What did I write about the office lease?
 Add Tesseract configuration to my Notepad library.
 ```
 
-Το Codex μπορεί να σας βοηθήσει να εγκαταστήσετε ή να δηλώσετε Tesseract, να συμπληρώσετε το `tesseract_path`, το `tessdata_dir`, και τις γλώσσες OCR στο `.notepad-librarian\settings.json`.
+Το Codex μπορεί να σας βοηθήσει να εγκαταστήσετε ή να δηλώσετε Tesseract, να συμπληρώσετε το `tesseract_path`, το `tessdata_dir`, και τις γλώσσες OCR στο `.notepad-librarian\settings.json`. Τα νέα libraries ξεκινούν με Greek και English OCR:
 
-## 7. Χρήσιμα prompts
+```json
+{
+  "ocr": {
+    "languages": ["ell", "eng"]
+  }
+}
+```
+
+## 7. Ενέργειες και calendar events
+
+Μπορείτε να γράψετε μέσα σε σημείωση:
+
+```text
+NTL: make a calendar event for contract signing on 24/6/2026
+```
+
+Το plugin μπορεί να προετοιμάσει μελλοντικά calendar events χωρίς να ξαναρωτήσει. Αν η ημερομηνία έχει περάσει, το event αγνοείται. Μετά τη δημιουργία, το action γράφεται στο:
+
+```text
+.notepad-librarian\action-state.json
+```
+
+Έτσι το ίδιο note δεν δημιουργεί διπλό event στο επόμενο run.
+
+## 8. Χρήσιμα prompts
 
 ```text
 Set up my Notepad library at C:\Users\Alex\Documents\NotepadLibrary.
@@ -167,17 +197,18 @@ Check my Notepad notes for actions.
 Show me the most recent context from my Notepad library.
 ```
 
-## 8. Ασφάλεια και προσωπικά δεδομένα
+## 9. Ασφάλεια και προσωπικά δεδομένα
 
 - Το plugin δουλεύει με τοπικά αρχεία.
 - Δεν αυτοματοποιεί live Notepad windows.
 - Δεν διαγράφει σιωπηλά τις σημειώσεις σας.
 - Οι κλασικές `.txt` σημειώσεις αρχειοθετούνται πριν αφαιρεθούν από το Inbox.
-- Οι εξωτερικές ενέργειες, όπως calendar events ή emails, ζητούν επιβεβαίωση.
+- Τα μελλοντικά calendar events μπορούν να δημιουργηθούν χωρίς νέο approval prompt και καταγράφονται για να μην γίνουν διπλά.
+- Τα emails και άλλες μη-calendar ενέργειες παραμένουν πιο προσεκτικές εκτός αν ενεργοποιήσετε explicit auto mode.
 - Τα generated Markdown notes είναι drafts. Ελέγχετε σημαντικές πληροφορίες πριν βασιστείτε πάνω τους.
 - Το plugin δεν είναι backup system. Κρατήστε δικά σας backups.
 
-## 9. Αν κάτι δεν δουλεύει
+## 10. Αν κάτι δεν δουλεύει
 
 Πρώτα δοκιμάστε:
 

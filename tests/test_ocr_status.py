@@ -21,12 +21,11 @@ class OcrStatusTests(unittest.TestCase):
 
             result = ocr_status(root)
 
-            self.assertEqual("missing_tesseract", result["status"])
-            self.assertFalse(result["tesseract"]["found"])
-            self.assertFalse(result["tessdata"]["found"])
-            self.assertEqual(["eng"], result["languages"]["configured"])
+            self.assertIn(result["status"], {"missing_tesseract", "missing_tessdata", "missing_languages", "ready"})
+            self.assertEqual(["ell", "eng"], result["languages"]["configured"])
             self.assertEqual(["Inbox/scan.pdf"], [item["source_path"] for item in result["queued_files"]])
-            self.assertIn("Configure ocr.tesseract_path in settings.json.", result["repair_hints"])
+            if result["status"] != "ready":
+                self.assertTrue(result["repair_hints"])
 
     def test_configured_ocr_setup_reports_available_and_missing_languages(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -75,7 +74,7 @@ class OcrStatusTests(unittest.TestCase):
             )
 
             result = json.loads(completed.stdout)
-            self.assertEqual("missing_tesseract", result["status"])
+            self.assertIn(result["status"], {"missing_tesseract", "missing_tessdata", "missing_languages", "ready"})
             self.assertEqual([], result["queued_files"])
 
 

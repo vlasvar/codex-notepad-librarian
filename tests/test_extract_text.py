@@ -42,9 +42,9 @@ class ExtractTextTests(unittest.TestCase):
 
             self.assertEqual("needs_ocr_setup", result["status"])
             self.assertEqual("application/pdf", result["content_type"])
-            self.assertEqual("pdf_pending_ocr", result["text_strategy"])
+            self.assertEqual("pdf_ocr_pending_setup", result["text_strategy"])
             self.assertEqual("", result["text"])
-            self.assertIn("PDF extraction/OCR is not configured yet.", result["issues"])
+            self.assertTrue(any("Tesseract" in issue for issue in result["issues"]))
 
     def test_unsupported_file_reports_unsupported_status(self):
         with tempfile.TemporaryDirectory() as tmp:

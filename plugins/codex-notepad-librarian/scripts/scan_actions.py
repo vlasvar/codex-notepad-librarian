@@ -20,6 +20,8 @@ except ImportError:
 SETTINGS_REL = ".notepad-librarian/settings.json"
 DEFAULT_SETTINGS = {
     "auto_act_on_ntl": False,
+    "auto_create_calendar_events": True,
+    "ignore_past_events": True,
     "date_order": "dmy",
 }
 
@@ -174,8 +176,9 @@ def load_settings(root: Path) -> dict[str, object]:
     if not path.exists():
         return dict(DEFAULT_SETTINGS)
     loaded = json.loads(path.read_text(encoding="utf-8-sig"))
-    settings = dict(DEFAULT_SETTINGS)
-    settings.update({key: loaded[key] for key in DEFAULT_SETTINGS.keys() & loaded.keys()})
+    settings = dict(loaded) if isinstance(loaded, dict) else {}
+    for key, value in DEFAULT_SETTINGS.items():
+        settings.setdefault(key, value)
     return settings
 
 
@@ -214,6 +217,12 @@ def _parse_dmy_date(text: str) -> str | None:
     except ValueError:
         return None
     return parsed.isoformat()
+
+
+def _is_past_event(date_value: str | None, today: date) -> bool:
+    if not date_value:
+        return False
+    return date.fromisoformat(date_value) < today
 
 
 def _classify_explicit(text: str) -> str:
@@ -257,9 +266,11 @@ def _action(
     kind: str,
     text: str,
     settings: dict[str, object],
+    today: date,
 ) -> dict[str, object]:
     is_explicit = trigger == "explicit"
     date_value = _parse_dmy_date(text)
+    auto_calendar = kind == "calendar" and bool(settings.get("auto_create_calendar_events", True))
     return {
         "source": rel_path(source, root),
         "line": line_number,
@@ -268,14 +279,19 @@ def _action(
         "text": text,
         "title": _title_from_line(text),
         "date": date_value,
-        "requires_confirmation": not (is_explicit and bool(settings["auto_act_on_ntl"])),
+        "past_event": _is_past_event(date_value, today),
+        "requires_confirmation": not (
+            (is_explicit and bool(settings["auto_act_on_ntl"]))
+            or auto_calendar
+        ),
     }
 
 
-def scan_actions(root: Path) -> dict[str, object]:
+def scan_actions(root: Path, *, today: date | None = None) -> dict[str, object]:
     root = root.expanduser().resolve()
     setup_library(root)
     settings = load_settings(root)
+    today = today or date.today()
     actions: list[dict[str, object]] = []
 
     for path in _iter_note_files(root):
@@ -285,19 +301,27 @@ def scan_actions(root: Path) -> dict[str, object]:
                 continue
             explicit_text = _extract_explicit_text(stripped)
             if explicit_text is not None:
+                kind = _classify_explicit(explicit_text)
+                date_value = _parse_dmy_date(explicit_text)
+                if kind == "calendar" and bool(settings.get("ignore_past_events", True)) and _is_past_event(date_value, today):
+                    continue
                 actions.append(
                     _action(
                         root=root,
                         source=path,
                         line_number=index,
                         trigger="explicit",
-                        kind=_classify_explicit(explicit_text),
+                        kind=kind,
                         text=explicit_text,
                         settings=settings,
+                        today=today,
                     )
                 )
                 continue
             if DATE_RE.search(stripped):
+                date_value = _parse_dmy_date(stripped)
+                if bool(settings.get("ignore_past_events", True)) and _is_past_event(date_value, today):
+                    continue
                 actions.append(
                     _action(
                         root=root,
@@ -307,10 +331,11 @@ def scan_actions(root: Path) -> dict[str, object]:
                         kind="calendar",
                         text=stripped,
                         settings=settings,
+                        today=today,
                     )
                 )
 
-    return {"library": str(root), "settings": settings, "actions": actions}
+    return {"library": str(root), "settings": settings, "today": today.isoformat(), "actions": actions}
 
 
 def main(argv: list[str] | None = None) -> int:

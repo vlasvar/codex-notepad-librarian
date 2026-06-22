@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shutil
 from pathlib import Path
 
 try:
@@ -17,7 +19,7 @@ except ImportError:
 DEFAULT_OCR = {
     "tesseract_path": "",
     "tessdata_dir": "",
-    "languages": ["eng"],
+    "languages": ["ell", "eng"],
 }
 
 
@@ -39,13 +41,52 @@ def _ocr_settings(settings: dict[str, object]) -> dict[str, object]:
     return merged
 
 
-def _path_status(value: object) -> dict[str, object]:
+def _candidate_tesseract_paths(value: object) -> list[Path]:
+    candidates: list[Path] = []
+    if isinstance(value, str) and value.strip():
+        candidates.append(Path(value).expanduser())
+    found = shutil.which("tesseract")
+    if found:
+        candidates.append(Path(found))
+    for base in (os.environ.get("ProgramFiles"), os.environ.get("ProgramFiles(x86)")):
+        if base:
+            candidates.append(Path(base) / "Tesseract-OCR" / "tesseract.exe")
+    unique: list[Path] = []
+    for candidate in candidates:
+        if candidate not in unique:
+            unique.append(candidate)
+    return unique
+
+
+def _candidate_tessdata_dirs(value: object, tesseract_path: Path | None) -> list[Path]:
+    candidates: list[Path] = []
+    if isinstance(value, str) and value.strip():
+        candidates.append(Path(value).expanduser())
+    if "TESSDATA_PREFIX" in os.environ:
+        candidates.append(Path(os.environ["TESSDATA_PREFIX"]).expanduser())
+    if tesseract_path:
+        candidates.append(tesseract_path.parent / "tessdata")
+    for base in (os.environ.get("ProgramFiles"), os.environ.get("ProgramFiles(x86)")):
+        if base:
+            candidates.append(Path(base) / "Tesseract-OCR" / "tessdata")
+    unique: list[Path] = []
+    for candidate in candidates:
+        if candidate not in unique:
+            unique.append(candidate)
+    return unique
+
+
+def _path_status(value: object, candidates: list[Path] | None = None) -> dict[str, object]:
     configured = isinstance(value, str) and bool(value.strip())
-    path = Path(value).expanduser() if configured else None
+    checked = candidates or ([Path(value).expanduser()] if configured else [])
+    found = next((path for path in checked if path.exists()), None)
+    path = found or (Path(value).expanduser() if configured else None)
     return {
         "path": str(path) if path else "",
         "configured": configured,
-        "found": bool(path and path.exists()),
+        "found": bool(found),
+        "auto_discovered": bool(found and not configured),
+        "checked": [str(candidate) for candidate in checked],
     }
 
 
@@ -80,8 +121,11 @@ def ocr_status(root: Path) -> dict[str, object]:
 
     settings = _read_json(root / ".notepad-librarian" / "settings.json", {})
     ocr = _ocr_settings(settings)
-    tesseract = _path_status(ocr.get("tesseract_path"))
-    tessdata = _path_status(ocr.get("tessdata_dir"))
+    tesseract_candidates = _candidate_tesseract_paths(ocr.get("tesseract_path"))
+    tesseract = _path_status(ocr.get("tesseract_path"), tesseract_candidates)
+    tesseract_path = Path(tesseract["path"]) if tesseract["found"] else None
+    tessdata_candidates = _candidate_tessdata_dirs(ocr.get("tessdata_dir"), tesseract_path)
+    tessdata = _path_status(ocr.get("tessdata_dir"), tessdata_candidates)
     tessdata_path = Path(tessdata["path"]) if tessdata["found"] else None
     configured_languages = list(ocr["languages"])
     available_languages = _available_languages(tessdata_path)
@@ -89,7 +133,7 @@ def ocr_status(root: Path) -> dict[str, object]:
 
     repair_hints: list[str] = []
     if not tesseract["found"]:
-        repair_hints.append("Configure ocr.tesseract_path in settings.json.")
+        repair_hints.append("Install Tesseract or configure ocr.tesseract_path in settings.json.")
     if not tessdata["found"]:
         repair_hints.append("Configure ocr.tessdata_dir in settings.json.")
     if tesseract["found"] and tessdata["found"] and missing_languages:

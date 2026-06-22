@@ -29,6 +29,7 @@ Library/
   Log.txt
 .notepad-librarian/
   processed-files.json
+  action-state.json
   retrieval-index.json
   settings.json
 ```
@@ -57,6 +58,8 @@ To inspect OCR readiness for scanned PDFs:
 python scripts\ocr_status.py <folder> --json
 ```
 
+PDF extraction first tries a searchable text layer. For scanned PDFs, OCR can run when Tesseract, a PDF renderer, and configured language data are available. Missing OCR setup must be reported without failing the whole processing loop.
+
 ## Action Notes
 
 Users can write explicit action requests with:
@@ -72,14 +75,22 @@ Run:
 python scripts\scan_actions.py <folder> --json
 ```
 
-Default behavior asks before any outward action. If `.notepad-librarian\settings.json` has `auto_act_on_ntl: true`, explicit `NTL:` actions may be acted on without another confirmation. Inferred actions, such as a dated dinner note without `NTL:`, always require confirmation.
+Future calendar events are auto-create eligible by default, and past calendar events are ignored based on the current date. Use the action runner to avoid duplicates:
+
+```powershell
+python scripts\run_actions.py <folder> --json
+python scripts\run_actions.py <folder> --record-created <action_id> --external-id <event_id> --json
+```
+
+If `.notepad-librarian\settings.json` has `auto_act_on_ntl: true`, explicit non-calendar `NTL:` actions may also be acted on without another confirmation. Otherwise, ask before non-calendar outward actions.
 
 ## Safety
 
 - Never silently delete user content.
 - Preserve original notes in `Library\Archive\Originals\` before removing an Inbox/root copy.
 - Skip `Library\Archive\Originals\` and `.notepad-librarian\`.
-- Ask before inferred calendar, email, reminder, or task actions.
+- Create future calendar events when the action runner marks them ready, then record the created action.
+- Ask before email, reminder, task, document, spreadsheet, PDF, or presentation actions unless automatic explicit action mode allows them.
 - Keep output readable in Notepad.
 - Treat OCR as optional setup: report missing Tesseract or language data, but do not fail the whole processing loop.
 - Use fake paths in public examples, such as `C:\Users\Alex\Documents\NotepadLibrary`.

@@ -1,7 +1,7 @@
 {
   "name": "codex-notepad-librarian",
-  "version": "0.2.0",
-  "description": "A Windows-first Codex plugin that turns folder-based notes into an organized, searchable local memory library with portable Markdown artifacts.",
+  "version": "0.3.0",
+  "description": "A Windows-first Codex plugin that turns folder-based notes into an organized, searchable local memory library with portable Markdown artifacts, OCR-aware PDF processing, and idempotent action handling.",
   "author": {
     "name": "Codex Notepad Librarian contributors"
   },
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Codex Notepad Librarian",
     "shortDescription": "Organize Notepad notes into searchable local memory.",
-    "longDescription": "A Windows-first Codex plugin that helps users write naturally in Notepad or plain folders while Codex processes .txt, .md, and OCR-pending PDF sources into searchable local memory with portable Markdown documents, review notes, preserved originals, and cited retrieval.",
+    "longDescription": "A Windows-first Codex plugin that helps users write naturally in Notepad or plain folders while Codex processes .txt, .md, and PDF sources into searchable local memory with portable Markdown documents, review notes, OCR setup diagnostics, idempotent future calendar-event preparation, preserved originals, and cited retrieval.",
     "developerName": "Codex Notepad Librarian contributors",
     "category": "Productivity",
     "capabilities": [
@@ -28,7 +28,9 @@
       "Knowledge management",
       "Plain text",
       "Markdown",
-      "Retrieval"
+      "Retrieval",
+      "OCR",
+      "Actions"
     ],
     "defaultPrompt": [
       "Set up my Notepad library.",

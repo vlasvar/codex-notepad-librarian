@@ -5,7 +5,7 @@ description: Use when the user asks to act on Notepad notes, scan NTL directives
 
 # Notepad Actions
 
-Scan a Notepad Librarian folder for explicit action directives and inferred dated events. Action handling remains approval-first even as the memory loop adds Markdown document notes.
+Scan a Notepad Librarian folder for explicit action directives and inferred dated events. Future calendar events are auto-create eligible by default; past calendar events are ignored based on the current run date. Other outward action types remain approval-first unless automatic explicit `NTL:` mode is enabled.
 
 ## Directive Forms
 
@@ -37,10 +37,22 @@ Dates are day-first: `27/1/2027` means 27 January 2027.
 python scripts\scan_actions.py <folder> --json
 ```
 
-3. Review each returned action.
-4. If `requires_confirmation` is `true`, ask the user before creating anything outward-facing.
-5. If `requires_confirmation` is `false`, the user has enabled automatic explicit `NTL:` action mode; use the available Codex connector or tool for the action.
-6. Inferred actions always require confirmation, even when automatic explicit NTL mode is enabled.
+3. Run:
+
+```powershell
+python scripts\run_actions.py <folder> --json
+```
+
+4. Create each `ready` calendar event with the available Codex calendar connector or tool without asking for another approval.
+5. After a successful external creation, record it:
+
+```powershell
+python scripts\run_actions.py <folder> --record-created <action_id> --external-id <event_id> --json
+```
+
+6. If a connector is unavailable, summarize the ready event and do not mark it created.
+7. For non-calendar actions, if `requires_confirmation` is `true`, ask the user before creating anything outward-facing.
+8. If `requires_confirmation` is `false`, automatic explicit `NTL:` action mode allows the action.
 
 ## Enabling Or Disabling Automatic NTL Mode
 
@@ -55,7 +67,7 @@ Automatic mode applies only to explicit `NTL:` or recognized librarian directive
 
 ## Action Handling
 
-- `calendar`: create a calendar event only after confirmation or when explicit NTL auto mode allows it.
+- `calendar`: create future calendar events without another approval prompt, then record the created action id. Ignore past events.
 - `email`: draft or send only after confirmation or when explicit NTL auto mode allows it.
 - `reminder`: create a reminder through the available reminder/task tool when possible.
 - `task`: create a task through the available task tool when possible.

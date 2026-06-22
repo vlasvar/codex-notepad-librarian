@@ -10,7 +10,7 @@ class PluginManifestTests(unittest.TestCase):
         manifest = json.loads((PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
 
         self.assertEqual("codex-notepad-librarian", manifest["name"])
-        self.assertEqual("0.2.0", manifest["version"])
+        self.assertEqual("0.3.0", manifest["version"])
         self.assertEqual("./skills/", manifest["skills"])
         self.assertIn("Notepad Librarian", manifest["interface"]["displayName"])
         self.assertIn("folder-based notes", manifest["description"])

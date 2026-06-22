@@ -68,9 +68,9 @@ class ProcessLibraryTests(unittest.TestCase):
             self.assertEqual(["Inbox/scan.pdf"], [item["source_path"] for item in result["processed"]])
             entry = result["processed"][0]
             self.assertEqual("application/pdf", entry["content_type"])
-            self.assertEqual("pdf_pending_ocr", entry["text_strategy"])
+            self.assertEqual("pdf_ocr_pending_setup", entry["text_strategy"])
             self.assertEqual("needs_ocr_setup", entry["extraction_status"])
-            self.assertIn("PDF extraction/OCR is not configured yet.", entry["extraction_issues"])
+            self.assertTrue(any("Tesseract" in issue for issue in entry["extraction_issues"]))
 
     def test_process_writes_portable_markdown_document_memory(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -91,6 +91,7 @@ class ProcessLibraryTests(unittest.TestCase):
             self.assertIn('extraction_status: "ok"', content)
             self.assertIn("# Lease Note", content)
             self.assertIn("## Summary", content)
+            self.assertIn("## Date Mentions", content)
             self.assertIn("## Extracted Entities", content)
             self.assertIn("## Related Memory", content)
             self.assertIn("## Open Questions", content)

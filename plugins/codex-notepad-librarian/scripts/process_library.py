@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -20,6 +21,7 @@ except ImportError:
 
 STATE_REL = ".notepad-librarian/processed-files.json"
 SUPPORTED_SUFFIXES = set(TEXT_TYPES) | {".pdf"}
+DATE_RE = re.compile(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{4}\b")
 
 
 def _now() -> str:
@@ -80,6 +82,29 @@ def _yaml_string(value: object) -> str:
     return f'"{text}"'
 
 
+def _date_mentions(text: str) -> list[str]:
+    return sorted(set(DATE_RE.findall(text)))
+
+
+def _likely_entities(text: str) -> list[str]:
+    candidates = re.findall(r"\b[A-Z][A-Za-z]{2,}(?:\s+[A-Z][A-Za-z]{2,}){0,3}\b", text)
+    stop = {"The", "This", "That", "Summary", "Source", "Notes"}
+    entities: list[str] = []
+    for candidate in candidates:
+        if candidate in stop or candidate in entities:
+            continue
+        entities.append(candidate)
+        if len(entities) == 10:
+            break
+    return entities
+
+
+def _bullet_lines(values: list[str], empty: str) -> str:
+    if not values:
+        return f"- {empty}\n"
+    return "".join(f"- {value}\n" for value in values)
+
+
 def _markdown_document(source: Path, root: Path, entry: dict[str, object], extraction: dict[str, object]) -> str:
     title = display_title(source)
     issues = entry.get("extraction_issues", [])
@@ -100,12 +125,15 @@ def _markdown_document(source: Path, root: Path, entry: dict[str, object], extra
         f"# {title}\n\n"
         "## Summary\n\n"
         "_Summary pending review._\n\n"
+        "## Date Mentions\n\n"
+        f"{_bullet_lines(_date_mentions(source_text), 'No date-like strings detected.')}\n"
         "## Extracted Entities\n\n"
-        "- None identified yet.\n\n"
+        f"{_bullet_lines(_likely_entities(source_text), 'None identified yet.')}\n"
         "## Related Memory\n\n"
         "- [[Index|Library Index]]\n\n"
         "## Open Questions\n\n"
-        "- What should this source be linked to?\n\n"
+        "- What should this source be linked to?\n"
+        "- Should any extracted dates become calendar events or reminders?\n\n"
         "## Extraction Notes\n\n"
         f"{issue_lines}\n\n"
         "## Source Notes\n\n"
@@ -196,7 +224,7 @@ def process_library(root: Path) -> dict[str, object]:
             skipped.append(existing)
             continue
 
-        extraction = extract_text(source)
+        extraction = extract_text(source, root)
         entry = _state_entry(source, root, source_sha, extraction)
         _write_memory_document(source, root, entry, extraction)
         files[source_rel] = entry

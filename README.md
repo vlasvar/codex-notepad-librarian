@@ -8,6 +8,15 @@ Write plain `.txt` or `.md` notes. Save them in a folder. Ask Codex to organize 
 
 No required Obsidian. No special app. No database. Just local files.
 
+## What's New
+
+- Future calendar events found in explicit `NTL:` notes can be prepared for creation without another approval prompt.
+- Past calendar events are ignored automatically based on the run date, so old notes do not create stale events.
+- Action state is stored in `.notepad-librarian\action-state.json` to avoid duplicate event creation on later runs.
+- PDF handling now tries searchable PDF text first, then Tesseract OCR for scanned PDFs when OCR tools are available.
+- OCR setup reports can auto-detect common Windows Tesseract installs and check for Greek (`ell`) and English (`eng`) language data.
+- Generated Markdown memory now includes detected date mentions and lightweight entity candidates to make review faster.
+
 ## 🇬🇷 Ελληνικά / Greek Users
 
 Υπάρχει απλός ελληνικός οδηγός χρήσης εδώ: [README.el.md](README.el.md).
@@ -56,11 +65,11 @@ Find what I wrote about the office lease.
 
 Codex searches the text library and answers with the relevant file path and snippet.
 
-For scanned PDFs, the Librarian reports OCR setup status instead of failing the whole run. Configure Tesseract paths later if you want OCR extraction.
+For PDFs, the Librarian first tries to extract an existing searchable text layer. If the PDF is scanned, it can use Tesseract OCR when the local machine has Tesseract, a PDF renderer, and the configured language data.
 
 ## PDFs And OCR
 
-You can put PDF files in `Inbox\` too. In v0.2, the Librarian treats PDFs conservatively: it records that the PDF needs OCR setup and keeps processing your normal notes instead of failing the whole run.
+You can put PDF files in `Inbox\` too. The Librarian treats PDFs conservatively: it records OCR setup issues and keeps processing your normal notes instead of failing the whole run.
 
 The plugin does not need Tesseract to process normal `.txt` or `.md` notes.
 
@@ -70,7 +79,15 @@ When you are ready to work with scanned PDFs, ask Codex:
 Add Tesseract configuration to my Notepad library.
 ```
 
-Codex can then help you install or point to Tesseract, set the `tesseract_path`, set the `tessdata_dir`, and choose OCR languages in `.notepad-librarian\settings.json`.
+Codex can then help you install or point to Tesseract, set the `tesseract_path`, set the `tessdata_dir`, and choose OCR languages in `.notepad-librarian\settings.json`. New libraries default to Greek and English OCR:
+
+```json
+{
+  "ocr": {
+    "languages": ["ell", "eng"]
+  }
+}
+```
 
 ## Action Notes
 
@@ -92,6 +109,8 @@ It can recognize simple Greek and Greeklish action language too, such as appoint
 
 Codex scans these lines and proposes calendar, email, reminder, task, Word document, spreadsheet, PDF, or presentation actions.
 
+Future calendar events are auto-allowed by default. Past events are ignored, and the action runner records created events in `.notepad-librarian\action-state.json` so the same note does not create duplicate calendar entries on the next run.
+
 The Librarian can also notice date-like notes even without `NTL:`:
 
 ```text
@@ -104,7 +123,7 @@ Codex should ask:
 Shall I create a calendar event for "dinner with Cassy at Belvedere Hotel Prague" on 27 January 2027?
 ```
 
-By default, the plugin asks before creating anything outside the text library. You can enable automatic action mode for explicit `NTL:` lines, but inferred events always require confirmation.
+Calendar events are prepared for creation without another approval prompt. Non-calendar outward actions can still use the safer approval flow unless you explicitly enable broader automatic action mode for `NTL:` lines.
 
 ## Installation
 
@@ -270,6 +289,7 @@ python plugins\codex-notepad-librarian\scripts\ocr_status.py C:\Users\Alex\Docum
 python plugins\codex-notepad-librarian\scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --json
 python plugins\codex-notepad-librarian\scripts\retrieve_library.py C:\Users\Alex\Documents\NotepadLibrary --query "lease terms" --json
 python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Documents\NotepadLibrary --json
+python plugins\codex-notepad-librarian\scripts\run_actions.py C:\Users\Alex\Documents\NotepadLibrary --json
 python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Documents\NotepadLibrary --enable-auto-ntl --json
 ```
 
@@ -281,16 +301,16 @@ python plugins\codex-notepad-librarian\scripts\scan_actions.py C:\Users\Alex\Doc
 - Originals are copied to `Library\Archive\Originals\` before Inbox/root copies are removed.
 - Processing state is stored in `.notepad-librarian\processed-files.json` so unchanged Inbox files can be skipped.
 - Missing Tesseract or language data is reported as OCR setup work; it is not a hard requirement for the processing loop.
-- Calendar, email, reminder, task, document, spreadsheet, PDF, and presentation actions are confirmation-gated by default.
-- Automatic action mode applies only to explicit `NTL:` or `note to librarian:` lines.
-- Inferred actions, such as a dated dinner note, always require confirmation.
+- Future calendar events are auto-allowed by default and tracked in action state to prevent duplicates.
+- Past calendar events are ignored based on the current run date.
+- Automatic action mode for other action types applies only to explicit `NTL:` or `note to librarian:` lines.
 - Generated notes are drafts. Review important material before relying on it.
 - This is not financial, legal, medical, travel, or professional advice.
 - The plugin is not a backup system. Keep your own backups.
 
 ## Status
 
-This public version supports setup, organizing saved `.txt` notes, processing Inbox `.txt`/`.md`/OCR-pending PDF sources, generating portable Markdown document memory and dated review notes, indexing `.txt` and Markdown memory files, OCR setup reporting, text retrieval, and action proposal scanning for calendar, email, reminder, task, document, spreadsheet, PDF, and presentation workflows.
+This public version supports setup, organizing saved `.txt` notes, processing Inbox `.txt`/`.md`/PDF sources, generating portable Markdown document memory and dated review notes, indexing `.txt` and Markdown memory files, OCR setup reporting and OCR attempts when tools are available, text retrieval, action proposal scanning, and idempotent future calendar-event preparation.
 
 ## License
 

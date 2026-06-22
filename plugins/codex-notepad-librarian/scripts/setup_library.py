@@ -81,11 +81,13 @@ def setup_library(root: Path) -> dict[str, object]:
     settings_rel = ".notepad-librarian/settings.json"
     default_settings = {
         "auto_act_on_ntl": False,
+        "auto_create_calendar_events": True,
+        "ignore_past_events": True,
         "date_order": "dmy",
         "ocr": {
             "tesseract_path": "",
             "tessdata_dir": "",
-            "languages": ["eng"],
+            "languages": ["ell", "eng"],
         },
     }
     if _write_if_missing(root / settings_rel, json.dumps(default_settings, indent=2) + "\n"):
